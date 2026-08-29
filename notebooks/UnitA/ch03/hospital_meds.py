@@ -59,13 +59,13 @@ def _(data, fit_lm):
 def _(data):
     """3. VIF (Variance Inflation Factor)."""
     from statsmodels.stats.outliers_influence import variance_inflation_factor
+    import pandas as pd
     import numpy as np
     _pdf = data.select(["Hospitals", "Beds", "Hosp_Beds"]).to_pandas()
     _vif = pd.DataFrame({
         "feature": ["Hospitals", "Beds", "Hosp_Beds"],
         "VIF": [variance_inflation_factor(_pdf.values, i) for i in range(_pdf.shape[1])],
     })
-    import pandas as pd
     print("VIF:")
     print(_vif)
     return

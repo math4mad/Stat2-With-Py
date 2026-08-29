@@ -42,11 +42,11 @@ def _(Stat2Table, mo):
 @app.cell
 def _(desc, load_rda, pl):
     """1. Load data and split by gender."""
-    df = load_rda(desc.name)
+    df = load_rda(desc.name).filter(pl.col("Gender").is_not_null()).drop_nulls()
     genders = df["Gender"].unique().sort().to_list()
     gdf = {g: df.filter(pl.col("Gender") == g) for g in genders}
-    for g, d in gdf.items():
-        print(f"{g}: n={d.shape[0]}")
+    for _g, _d in gdf.items():
+        print(f"{_g}: n={_d.shape[0]}")
     df.head(5)
     return df, gdf, genders
 
@@ -55,10 +55,10 @@ def _(desc, load_rda, pl):
 def _(gdf, genders, fit_lm):
     """2. Fit separate models: Survey2 ~ Survey1."""
     models = {}
-    for g in genders:
-        models[g] = fit_lm(gdf[g], "Survey2 ~ Survey1")
-        print(f"=== {g} ===")
-        print(models[g].summary())
+    for _g in genders:
+        models[_g] = fit_lm(gdf[_g], "Survey2 ~ Survey1")
+        print(f"=== {_g} ===")
+        print(models[_g].summary())
         print()
     return models
 
@@ -69,15 +69,15 @@ def _(gdf, genders, models, plt, add_border, np):
     _fig, _ax = plt.subplots(figsize=(8, 5))
     add_border(_ax)
     _colors = {genders[0]: "blue", genders[1]: "purple"} if len(genders) >= 2 else {}
-    for g in genders:
-        _d = gdf[g]
+    for _g in genders:
+        _d = gdf[_g]
         _x = _d["Survey1"].to_numpy()
         _y = _d["Survey2"].to_numpy()
-        _ax.scatter(_x, _y, s=60, c=_colors.get(g, "gray"), alpha=0.4,
-                     edgecolors="black", linewidths=0.8, label=str(g))
+        _ax.scatter(_x, _y, s=60, c=_colors.get(_g, "gray"), alpha=0.4,
+                     edgecolors="black", linewidths=0.8, label=str(_g))
         _x_sort = np.sort(_x)
-        _y_hat = models[g].predict({"Survey1": _x_sort})
-        _ax.plot(_x_sort, _y_hat, color=_colors.get(g, "gray"), linewidth=2)
+        _y_hat = models[_g].predict({"Survey1": _x_sort})
+        _ax.plot(_x_sort, _y_hat, color=_colors.get(_g, "gray"), linewidth=2)
     _ax.set_xlabel("Survey1")
     _ax.set_ylabel("Survey2")
     _ax.legend()

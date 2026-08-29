@@ -73,9 +73,9 @@ def _(df, fit_lm, anova_table):
 
 @app.cell
 def _(cats, groups, levene_test):
-    result = levene_test(*[groups[c] for c in cats])
-    print(f"Levene's test: W={result['statistic']:.4f}, p={result['pvalue']:.4f}")
-    return result
+    _result = levene_test(*[groups[c] for c in cats])
+    print(f"Levene's test: W={_result['statistic']:.4f}, p={_result['pvalue']:.4f}")
+    return _result
 
 
 if __name__ == "__main__":

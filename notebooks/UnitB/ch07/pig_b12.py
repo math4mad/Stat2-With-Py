@@ -20,7 +20,7 @@ def _(Stat2Table, mo):
 
 @app.cell
 def _(desc, load_rda, pl):
-    df = load_rda(desc.name)
+    df = load_rda(desc.name).with_columns(pl.col("Antibiotic").cast(pl.Int32), pl.col("B12").cast(pl.Int32))
     # Contingency table
     means = df.group_by(["Antibiotic", "B12"]).agg(pl.col("WgtGain").mean().round(2)).sort(["Antibiotic", "B12"])
     print("Mean weight gain by group:")

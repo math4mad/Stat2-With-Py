@@ -46,8 +46,8 @@ def _(desc, load_rda, pl):
     sexes = df["Sex"].unique().sort().to_list()
     gdf = {s: df.filter(pl.col("Sex") == s) for s in sexes}
     print(f"Sexes: {sexes}")
-    for s, g in gdf.items():
-        print(f"  {s}: n={g.shape[0]}")
+    for _s, _g in gdf.items():
+        print(f"  {_s}: n={_g.shape[0]}")
     df.head(5)
     return df, gdf, sexes
 
@@ -56,10 +56,10 @@ def _(desc, load_rda, pl):
 def _(gdf, sexes, fit_lm):
     """2. Fit separate models: Weight ~ Age for each sex."""
     models = {}
-    for s in sexes:
-        models[s] = fit_lm(gdf[s], "Weight ~ Age")
-        print(f"=== {s} ===")
-        print(models[s].summary())
+    for _s in sexes:
+        models[_s] = fit_lm(gdf[_s], "Weight ~ Age")
+        print(f"=== {_s} ===")
+        print(models[_s].summary())
         print()
     return models
 
@@ -70,15 +70,15 @@ def _(gdf, sexes, models, plt, add_border, np):
     _fig, _ax = plt.subplots(figsize=(8, 5))
     add_border(_ax)
     _colors = {"M": "blue", "F": "purple"}
-    for s in sexes:
-        _g = gdf[s]
+    for _s in sexes:
+        _g = gdf[_s]
         _x = _g["Age"].to_numpy()
         _y = _g["Weight"].to_numpy()
-        _ax.scatter(_x, _y, s=60, c=_colors.get(s, "gray"), alpha=0.4,
-                     edgecolors="black", linewidths=0.8, label=s)
+        _ax.scatter(_x, _y, s=60, c=_colors.get(_s, "gray"), alpha=0.4,
+                     edgecolors="black", linewidths=0.8, label=_s)
         _x_sort = np.sort(_x)
-        _y_hat = models[s].predict({"Age": _x_sort})
-        _ax.plot(_x_sort, _y_hat, color=_colors.get(s, "gray"), linewidth=2)
+        _y_hat = models[_s].predict({"Age": _x_sort})
+        _ax.plot(_x_sort, _y_hat, color=_colors.get(_s, "gray"), linewidth=2)
     _ax.set_xlabel("Age (month)")
     _ax.set_ylabel("Weight (pound)")
     _ax.legend()

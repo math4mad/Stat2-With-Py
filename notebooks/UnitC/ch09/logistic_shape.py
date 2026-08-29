@@ -14,7 +14,8 @@ def _():
 
 @app.cell
 def _(mo):
-    mo.md("# Logistic Curve Shape – Parameter Effects"); return
+    mo.md("# Logistic Curve Shape – Parameter Effects")
+    return
 
 @app.cell
 def _(logistic, np, plt):

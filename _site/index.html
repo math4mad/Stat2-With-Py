@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stat2 with Python</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1a1a2e; background: #f8f9fc; line-height: 1.7; }
+
+  .hero { background: linear-gradient(135deg, #0f0c29 0%, #1a1a4e 40%, #24243e 100%); color: #fff; padding: 5rem 2rem 4rem; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 50%, rgba(52,152,219,0.15) 0%, transparent 70%), radial-gradient(ellipse at 70% 20%, rgba(155,89,182,0.1) 0%, transparent 60%); }
+  .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+  .hero h1 { font-size: 3rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+  .hero h1 span { background: linear-gradient(135deg, #3498db, #9b59b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero .subtitle { font-size: 1.2rem; color: #a8b2d1; margin-bottom: 1.5rem; }
+  .hero .badge-row { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+  .hero .badge { padding: 0.35rem 0.9rem; border-radius: 20px; font-size: 0.82rem; font-weight: 500; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #ccd6f6; }
+  .hero .badge.accent { background: rgba(52,152,219,0.2); border-color: rgba(52,152,219,0.3); color: #6bb5f0; }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
+  .section-title { font-size: 1.5rem; font-weight: 700; color: #1a1a4e; margin: 3rem 0 1.5rem; padding-bottom: 0.6rem; border-bottom: 2px solid #e8ecf4; display: flex; align-items: center; gap: 0.5rem; }
+  .section-title .icon { font-size: 1.3rem; }
+
+  .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin: 2rem 0; }
+  .stat-item { background: #fff; border-radius: 12px; border: 1px solid #e8ecf4; padding: 1.5rem; text-align: center; }
+  .stat-item .stat-num { font-size: 2rem; font-weight: 800; color: #3498db; }
+  .stat-item .stat-label { font-size: 0.85rem; color: #7c8097; margin-top: 0.2rem; }
+
+  .unit-grid { display: grid; gap: 1.2rem; }
+  .unit-card { background: #fff; border-radius: 12px; border: 1px solid #e8ecf4; overflow: hidden; transition: box-shadow 0.2s, transform 0.2s; }
+  .unit-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.08); transform: translateY(-1px); }
+  .unit-card-header { padding: 1.2rem 1.5rem; display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid #f0f2f8; }
+  .unit-tag { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.25rem 0.6rem; border-radius: 6px; white-space: nowrap; }
+  .unit-tag.ch00, .unit-tag.ch01, .unit-tag.ch02, .unit-tag.ch03, .unit-tag.ch04 { background: #e8f5e9; color: #2e7d32; }
+  .unit-tag.ch05, .unit-tag.ch06, .unit-tag.ch07 { background: #e3f2fd; color: #1565c0; }
+  .unit-tag.ch09, .unit-tag.ch10 { background: #f3e5f5; color: #7b1fa2; }
+  .unit-tag.ch12 { background: #fff3e0; color: #e65100; }
+  .unit-card-header .unit-name { font-weight: 600; font-size: 1.05rem; color: #1a1a2e; }
+  .unit-card-header .unit-status { margin-left: auto; font-size: 0.8rem; }
+  .unit-card-body { padding: 1rem 1.5rem 1.2rem; }
+  .unit-links { display: flex; flex-wrap: wrap; gap: 0.4rem 0.8rem; }
+  .unit-links a { color: #3498db; text-decoration: none; font-size: 0.9rem; padding: 0.3rem 0.6rem; border-radius: 6px; transition: background 0.15s; }
+  .unit-links a:hover { background: #eef5fc; text-decoration: none; }
+  .unit-links a::before { content: '📄 '; font-size: 0.8rem; }
+
+  .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.8rem; margin: 1rem 0 2rem; }
+  .tech-card { background: #fff; border-radius: 10px; border: 1px solid #e8ecf4; padding: 1.2rem; display: flex; align-items: center; gap: 0.8rem; transition: box-shadow 0.2s; }
+  .tech-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .tech-icon { font-size: 1.6rem; width: 2.4rem; text-align: center; }
+  .tech-info .tech-name { font-weight: 600; font-size: 0.95rem; }
+  .tech-info .tech-role { font-size: 0.8rem; color: #7c8097; }
+
+  .footer { margin-top: 4rem; padding: 2rem 1.5rem; text-align: center; border-top: 1px solid #e8ecf4; color: #7c8097; font-size: 0.85rem; }
+  .footer a { color: #3498db; text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+  .status-done { color: #27ae60; font-weight: 600; }
+  .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 0.4rem; }
+  .status-dot.green { background: #27ae60; }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 2rem; }
+    .hero { padding: 3rem 1rem 2.5rem; }
+    .unit-card-header { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-content">
+    <h1>Stat2 <span>with Python</span></h1>
+    <p class="subtitle">Statistical analyses from the <em>Stat2</em> textbook,<br>reimagined in Python with marimo notebooks</p>
+    <div class="badge-row">
+      <span class="badge accent">🐍 Python 3.12</span>
+      <span class="badge">📊 polars</span>
+      <span class="badge">📈 statsmodels</span>
+      <span class="badge">🎨 matplotlib + seaborn</span>
+      <span class="badge accent">⚡ marimo</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num">87</div><div class="stat-label">Tests Passing</div></div>
+    <div class="stat-item"><div class="stat-num">48</div><div class="stat-label">Notebooks</div></div>
+    <div class="stat-item"><div class="stat-num">10</div><div class="stat-label">Chapters</div></div>
+    <div class="stat-item"><div class="stat-num">100+</div><div class="stat-label">RDA Datasets</div></div>
+  </div>
+
+  <h2 class="section-title"><span class="icon">📚</span> Table of Contents</h2>
+  <div class="unit-grid">
+
+    <!-- ch00 -->
+    <div class="unit-card">
+      <div class="unit-card-header">
+        <span class="unit-tag ch00">ch00</span><span class="unit-name">Data Preliminaries</span>
+        <span class="unit-status"><span class="status-dot green"></span><span class="status-done">Phase 1</span></span>
+      </div>
+      <div class="unit-card-body"><div class="unit-links"><a href="ch00/wtloss4.html">Weight Loss Incentive Study</a></div></div>
+    </div>
+
+    <!-- ch01 -->
+    <div class="unit-card">
+      <div class="unit-card-header">
+        <span class="unit-tag ch01">ch01</span><span class="unit-name">Simple Linear Regression</span>
+        <span class="unit-status"><span class="status-dot green"></span><span class="status-done">Phase 1</span></span>
+      </div>
+      <div class="unit-card-body"><div class="unit-links">
+        <a href="UnitA/ch01/doctors_hospital_reg.html">Doctors–Hospitals</a>
+        <a href="UnitA/ch01/doctors_hospital_reg_sqrt.html">Doctors–Hospitals (sqrt)</a>
+        <a href="UnitA/ch01/accord_price.html">Accord Price</a>
+        <a href="UnitA/ch01/mammalspecies_islands.html">Species–Area</a>
+        <a href="UnitA/ch01/log_circle_radius.html">Circle Area</a>
+        <a href="UnitA/ch01/capacitor_voltage.html">Capacitor Voltage</a>
+        <a href="UnitA/ch01/studentized_longjump.html">Long Jump</a>
+        <a href="UnitA/ch01/ex_1_15_leaf_width.html">Leaf Width</a>
+        <a href="UnitA/ch01/ex_1_16_glow_worms.html">Glow Worms</a>
+        <a href="UnitA/ch01/ex_1_43_oysters.html">Oysters</a>
+      </div></div>
+    </div>
+
+    <!-- ch02 -->
+    <div class="unit-card">
+      <div class="unit-card-header">
+        <span class="unit-tag ch02">ch02</span><span class="unit-name">Multiple Regression</span>
+        <span class="unit-status"><span class="status-dot green"></span><span class="status-done">Phase 2</span></span>
+      </div>
+      <div class="unit-card-body"><div class="unit-links">
+        <a href="UnitA/ch02/bookpages_price.html">Book Pages–Price</a>
+        <a href="UnitA/ch02/breakfast_cereal.html">Breakfast Cereal</a>
+        <a href="UnitA/ch02/butterfly_wingsize.html">Butterfly Wingsize</a>
+        <a href="UnitA/ch02/metabolic_rate.html">Metabolic Rate</a>
+      </div></div>
+    </div>
+
+    <!-- ch03 -->
+    <div class="unit-card">
+      <div class="unit-card-header">
+        <span class="unit-tag ch03">ch03</span><span class="unit-name">More on Regression</span>
+        <span class="unit-status"><span class="status-dot green"></span><span class="status-done">Phase 2</span></span>
+      </div>
+      <div class="unit-card-body"><div class="unit-links">
+        <a href="UnitA/ch03/co2_quadratic.html">CO₂ Quadratic</a>
+        <a href="UnitA/ch03/fish_nolinear.html">Fish Non-linear</a>
+        <a href="UnitA/ch03/customer_spending.html">Customer Spending</a>
+        <a href="UnitA/ch03/house_multicollinearity.html">House Multicollinearity</a>
+        <a href="UnitA/ch03/hospital_meds.html">Hospital Meds Interaction</a>
+        <a href="UnitA/ch03/boy_girl_growth.html">Boy vs Girl Growth</a>
+        <a href="UnitA/ch03/brain_tissue.html">Brain pH</a>
+        <a href="UnitA/ch03/handwriting.html">Handwriting</a>
+        <a href="UnitA/ch03/max_trip_time.html">Max Trip Time</a>
+        <a href="UnitA/ch03/nfl_offense_defense.html">NFL Offense–Defense</a>
+      </div></div>
+    </div>
+
+    <!-- ch04 -->
+    <div class="unit-card">
+      <div class="unit-card-header">
+        <span class="unit-tag ch04">ch04</span><span class="unit-name">ANOVA</span>
+        <span class="unit-status"><span class="status-dot green"></span><span class="status-done">Phase 2</span></span>
+      </div>
+      <div class="unit-card-body"><div class="unit-links">
+        <a href="UnitA/ch04/added_variable_plot.html">Added Variable Plot</a>
+        <a href="UnitA/ch04/firstyear_gpa.html">First Year GPA</a>
+        <a href="UnitA/ch04/three_cars_onehot.html">Three Cars One-Hot</a>
+      </div></div>
+    </div>
+
+    <!-- Unit B -->
+    <div class="unit-card">
+      <div class="unit-card-header">
+        <span class="unit-tag ch05">Unit B</span><span class="unit-name">Ch05–07 — ANOVA & Experimental Design</span>
+        <span class="unit-status"><span class="status-dot green"></span><span class="status-done">Phase 3</span></span>
+      </div>
+      <div class="unit-card-body"><div class="unit-links">
+        <a href="UnitB/ch05/commute_time.html">Commute Time</a>
+        <a href="UnitB/ch05/fruit_flies.html">Fruit Flies</a>
+        <a href="UnitB/ch05/leafhoppers.html">Leafhoppers</a>
+        <a href="UnitB/ch05/rat_fat.html">Rat Fat</a>
+        <a href="UnitB/ch05/teen_pregnancy.html">Teen Pregnancy</a>
+        <a href="UnitB/ch05/walking_babies.html">Walking Babies</a>
+        <a href="UnitB/ch06/frantic_fingers.html">Frantic Fingers</a>
+        <a href="UnitB/ch06/radioactive_twins.html">Radioactive Twins</a>
+        <a href="UnitB/ch06/sleeping_shrews.html">Sleeping Shrews</a>
+        <a href="UnitB/ch07/bird_calcium.html">Bird Calcium</a>
+        <a href="UnitB/ch07/pig_b12.html">Pig B12</a>
+      </div></div>
+    </div>
+
+    <!-- Unit C -->
+    <div class="unit-card">
+      <div class="unit-card-header">
+        <span class="unit-tag ch09">Unit C</span><span class="unit-name">Ch09–10 — Logistic Regression</span>
+        <span class="unit-status"><span class="status-dot green"></span><span class="status-done">Phase 3</span></span>
+      </div>
+      <div class="unit-card-body"><div class="unit-links">
+        <a href="UnitC/ch09/logistic_shape.html">Logistic Shape</a>
+        <a href="UnitC/ch09/losing_sleep.html">Losing Sleep</a>
+        <a href="UnitC/ch09/med_gpa.html">Med GPA</a>
+        <a href="UnitC/ch09/migraines.html">Migraines</a>
+        <a href="UnitC/ch10/eyes_dilation.html">Eyes Dilation</a>
+      </div></div>
+    </div>
+
+    <!-- Unit D -->
+    <div class="unit-card">
+      <div class="unit-card-header">
+        <span class="unit-tag ch12">Unit D</span><span class="unit-name">Ch12 — Time Series</span>
+        <span class="unit-status"><span class="status-dot green"></span><span class="status-done">Phase 3</span></span>
+      </div>
+      <div class="unit-card-body"><div class="unit-links">
+        <a href="UnitD/ch12/apple_stock.html">Apple Stock</a>
+        <a href="UnitD/ch12/peace_bridge.html">Peace Bridge</a>
+        <a href="UnitD/ch12/seaice.html">Sea Ice</a>
+        <a href="UnitD/ch12/seasonal_timeseries.html">Seasonal Time Series</a>
+      </div></div>
+    </div>
+
+  </div>
+
+  <h2 class="section-title"><span class="icon">🛠</span> Tech Stack</h2>
+  <div class="tech-grid">
+    <div class="tech-card"><div class="tech-icon">🐍</div><div class="tech-info"><div class="tech-name">Python 3.12</div><div class="tech-role">Core language</div></div></div>
+    <div class="tech-card"><div class="tech-icon">📊</div><div class="tech-info"><div class="tech-name">polars</div><div class="tech-role">Data manipulation</div></div></div>
+    <div class="tech-card"><div class="tech-icon">📈</div><div class="tech-info"><div class="tech-name">statsmodels</div><div class="tech-role">Statistical modeling</div></div></div>
+    <div class="tech-card"><div class="tech-icon">🎨</div><div class="tech-info"><div class="tech-name">matplotlib + seaborn</div><div class="tech-role">Publication graphics</div></div></div>
+    <div class="tech-card"><div class="tech-icon">⚡</div><div class="tech-info"><div class="tech-name">marimo</div><div class="tech-role">Reactive notebooks</div></div></div>
+    <div class="tech-card"><div class="tech-icon">🧪</div><div class="tech-info"><div class="tech-name">pytest</div><div class="tech-role">87 tests passing</div></div></div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <p><a href="https://github.com/math4mad/Stat2-With-Py">View on GitHub</a> &nbsp;·&nbsp; Built with ♥ for statistical education</p>
+  <p style="margin-top: 0.4rem;">Licensed under MIT</p>
+</footer>
+
+</body>
+</html>

@@ -37,7 +37,7 @@ def _(data, fit_lm, fit_glm):
 def _(data, model_glm, model_lm, np, pd, plt):
     _xtest = np.linspace(2.5, 4.0, 100)
     _y_lm = model_lm.predict({"GPA": _xtest})
-    _y_glm = model_glm.predict(pd.DataFrame({"GPA": _xtest}))
+    _y_glm = model_glm.predict(pd.DataFrame({"GPA": _xtest})).values
     _fig, (_ax1, _ax2) = plt.subplots(1, 2, figsize=(12, 5))
     _ax1.scatter(data["GPA"], data["MCAT"], s=60, c="purple", alpha=0.4, edgecolors="black")
     _ax1.plot(_xtest, _y_lm, "orange", linewidth=2); _ax1.set_xlabel("GPA"); _ax1.set_ylabel("MCAT")

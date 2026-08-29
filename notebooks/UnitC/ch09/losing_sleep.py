@@ -45,7 +45,7 @@ def _(agg, df, fit_lm, fit_glm, np, pd, plt):
     model_glm = fit_glm(df, "Outcome ~ Age")
     _xtest = np.linspace(0, 40, 100)
     _y_lm = model_lm.predict({"Age": _xtest})
-    _y_glm = model_glm.predict(pd.DataFrame({"Age": _xtest}))
+    _y_glm = model_glm.predict(pd.DataFrame({"Age": _xtest})).values
     _fig, _ax = plt.subplots(figsize=(8, 5))
     _ax.scatter(agg["Age"], agg["proportion"], s=80, c="purple", alpha=0.6, edgecolors="black", label="Data")
     _ax.plot(_xtest, _y_lm, "b-", linewidth=2, label="Linear")

@@ -278,10 +278,8 @@ def fit_glm(
     statsmodels GLM Results object
     """
     pdf = data.to_pandas()
-    import patsy
-    y, X = patsy.dmatrices(formula, data=pdf, return_type="dataframe")
     if family == "binomial":
-        model = sm.GLM(y, X, family=sm.families.Binomial())
+        model = smf.glm(formula=formula, data=pdf, family=sm.families.Binomial())
     else:
         raise ValueError(f"Unsupported family: {family}")
     return model.fit()
