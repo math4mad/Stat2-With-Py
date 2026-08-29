@@ -19,6 +19,7 @@ conda env :  lock5stat-env
 1. every phase complete , testing and summarize it and submit
 2. **import**  if you don't recieve command to do next phase, don't do it
 3. if `ch00 ch01` publish   affect other  Unit, please update。
+3  at phase1  make 4 try in website syle , then capture images for select 
 
 
 
